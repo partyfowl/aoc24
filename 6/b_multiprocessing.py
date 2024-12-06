@@ -1,7 +1,6 @@
 import timeit
 from multiprocessing.pool import Pool
 
-
 BOUNDARY = "!"
 OBSTACLE = "#"
 GUARD = "^"

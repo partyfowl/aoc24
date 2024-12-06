@@ -1,6 +1,5 @@
 import timeit
 
-
 BOUNDARY = "!"
 OBSTACLE = "#"
 GUARD = "^"
