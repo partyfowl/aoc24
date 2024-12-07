@@ -21,6 +21,10 @@ def check_result(result: int, values: list[int]):
             elif operators[i] == "2":
                 value = int(str(value) + str(values[i + 1]))
 
+            # Move on if the current value is greater than result
+            # As there are only positive modifiers in use here
+            if value > result:
+                break
         if value == result:
             return result
     return 0
