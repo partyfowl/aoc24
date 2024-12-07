@@ -11,7 +11,7 @@ def check_result(result: int, values: list[int]):
 
     combinations = [_ for _ in range(pow(3, num_operators))]
 
-    # If the final value is not a factor of the result, 
+    # If the final value is not a factor of the result,
     # then we can eliminate 1/3 of the combinations
     final_operator_can_be_multiplier = (result % values[-1]) == 0
     if not final_operator_can_be_multiplier:
