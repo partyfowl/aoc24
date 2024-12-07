@@ -1,4 +1,5 @@
 import re
+from multiprocessing.pool import Pool
 from timeit import timeit
 
 from numpy import base_repr  # lazy
@@ -38,12 +39,8 @@ def main():
             values = [int(_) for _ in values_re.findall(line, pos=match.end(0))]
             equations.append((result, values))
 
-    total = 0
-
-    for result, values in equations:
-        total += check_result(result, values)
-
-    print(total)
+    with Pool() as p:
+        print(sum(p.starmap(check_result, equations)))
 
 
 if __name__ == "__main__":
