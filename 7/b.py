@@ -1,15 +1,15 @@
 import re
+from itertools import product
 from multiprocessing.pool import Pool
 from timeit import timeit
-
-from numpy import base_repr  # lazy
 
 
 def check_result(result: int, values: list[int]):
     # Return the result if it is possible to make, else return 0
     num_operators = len(values[1:])
 
-    combinations = [_ for _ in range(pow(3, num_operators))]
+    # Ternary format for operators here, where 0 is add, 1 is multiply, 2 is concat
+    combinations = [_ for _ in product("012", repeat=num_operators)]
 
     # If the final value is not a factor of the result,
     # then we can eliminate 1/3 of the combinations
@@ -17,10 +17,8 @@ def check_result(result: int, values: list[int]):
     if not final_operator_can_be_multiplier:
         del combinations[1::3]
 
-    for combo in combinations:
+    for operators in combinations:
         value = values[0]
-        # Ternary format for operators here, where 0 is add, 1 is multiply, 2 is concat
-        operators = base_repr(combo, 3).zfill(num_operators)
         for i in range(num_operators):
             if operators[i] == "0":
                 value += values[i + 1]
