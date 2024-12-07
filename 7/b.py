@@ -8,8 +8,16 @@ from numpy import base_repr  # lazy
 def check_result(result: int, values: list[int]):
     # Return the result if it is possible to make, else return 0
     num_operators = len(values[1:])
-    combinations = pow(3, num_operators)
-    for combo in range(combinations):
+
+    combinations = [_ for _ in range(pow(3, num_operators))]
+
+    # If the final value is not a factor of the result, 
+    # then we can eliminate 1/3 of the combinations
+    final_operator_can_be_multiplier = (result % values[-1]) == 0
+    if not final_operator_can_be_multiplier:
+        del combinations[1::3]
+
+    for combo in combinations:
         value = values[0]
         # Ternary format for operators here, where 0 is add, 1 is multiply, 2 is concat
         operators = base_repr(combo, 3).zfill(num_operators)
