@@ -4,42 +4,31 @@ from itertools import combinations
 
 complicated_regex = re.compile(r"\w")
 
-antennas: defaultdict[str, set[tuple[int, int]]] = defaultdict(set)
-antinodes: set[tuple[int, int]] = set()
+antennas: defaultdict[str, set[complex]] = defaultdict(set)
+antinodes: set[complex] = set()
 
 with open("input.txt") as f:
     for y, line in enumerate(f):
         for match in complicated_regex.finditer(line):
-            antenna = (y, match.start())
-            antennas[match.group()].add(antenna)
-            antinodes.add(antenna)
+            # Abusing complex types for coordinates here
+            antennas[match.group()].add(complex(y, match.start()))
 
 max_y = y
-max_x = len(line) - 1
+max_x = len(line.strip()) - 1
 
 for frequency in antennas.values():
     for a, b in combinations(frequency, r=2):
-        diff_y = b[0] - a[0]
-        diff_x = b[1] - a[1]
+        # Thanks to the abuse of complex types, this matrix diff is nice and easy
+        diff = a - b
 
-        antinode = (b[0] + diff_y, b[1] + diff_x)
-        while (
-            antinode[0] >= 0
-            and antinode[1] >= 0
-            and antinode[0] <= max_y
-            and antinode[1] <= max_x
-        ):
+        antinode = a
+        while 0 <= int(antinode.real) <= max_y and 0 <= int(antinode.imag) <= max_x:
             antinodes.add(antinode)
-            antinode = (antinode[0] + diff_y, antinode[1] + diff_x)
+            antinode = antinode + diff
 
-        antinode = (a[0] - diff_y, a[1] - diff_x)
-        while (
-            antinode[0] >= 0
-            and antinode[1] >= 0
-            and antinode[0] <= max_y
-            and antinode[1] <= max_x
-        ):
+        antinode = b
+        while 0 <= int(antinode.real) <= max_y and 0 <= int(antinode.imag) <= max_x:
             antinodes.add(antinode)
-            antinode = (antinode[0] - diff_y, antinode[1] - diff_x)
+            antinode = antinode - diff
 
 print(len(antinodes))
