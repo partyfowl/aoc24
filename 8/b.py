@@ -2,7 +2,6 @@ import re
 from collections import defaultdict
 from itertools import combinations
 
-
 complicated_regex = re.compile(r"\w")
 
 antennas: defaultdict[str, set[tuple[int, int]]] = defaultdict(set)

@@ -1,5 +1,5 @@
-import re
 import json
+import re
 
 regex = re.compile(r"(\d+)\|(\d+)")
 

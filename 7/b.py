@@ -28,11 +28,12 @@ def check_result_recursive(result: int, values: list[int]):
         elif operator == "||":
             operator_result = int(str(value) + str(next_value))
 
-        new_values = [operator_result] + values # Creates a new list
+        new_values = [operator_result] + values  # Creates a new list
         if check_result_recursive(result, new_values):
             return result
 
     return 0
+
 
 def check_result(result: int, values: list[int]):
     # Return the result if it is possible to make, else return 0
