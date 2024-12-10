@@ -1,10 +1,13 @@
+from functools import cache
+from timeit import timeit
 from typing import Literal
 
 BOUNDARY = "!"
 
 
+@cache  # Cache known paths to peaks, reduces runtime by ~50%
 def check_directions(
-    grid: list[list[int | Literal["!"]]], location: complex, value: int = 0
+    grid: tuple[tuple[int | Literal["!"]]], location: complex, value: int = 0
 ) -> tuple[set[complex], int]:
     peaks = set()
     routes_count = 0
@@ -43,11 +46,14 @@ def main():
         grid.insert(0, [BOUNDARY] * len(grid[0]))
         grid.append(grid[0])
 
+    # Make this a tuple so it's hashable, so we can cache responses for known paths
+    grid_tuple: tuple[tuple[int | Literal["!"]]] = tuple(tuple(_) for _ in grid)
+
     total_1 = 0
     total_2 = 0
 
     for trailhead in trailheads:
-        unique_peaks, routes = check_directions(grid, trailhead)
+        unique_peaks, routes = check_directions(grid_tuple, trailhead)
         total_1 += len(unique_peaks)
         total_2 += routes
 
@@ -56,4 +62,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    print(timeit(main, number=100))
