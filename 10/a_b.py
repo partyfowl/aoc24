@@ -1,3 +1,4 @@
+from collections import defaultdict
 from functools import cache
 from timeit import timeit
 from typing import Literal
@@ -8,9 +9,8 @@ BOUNDARY = "!"
 @cache  # Cache known paths to peaks, reduces runtime by ~50%
 def check_directions(
     grid: tuple[tuple[int | Literal["!"]]], location: complex, value: int = 0
-) -> tuple[set[complex], int]:
-    peaks = set()
-    routes_count = 0
+) -> defaultdict[str, int]:
+    peaks: defaultdict[str, int] = defaultdict(int)
     for direction in (1, 1j, -1, -1j):
         lookahead = location + direction
         lookahead_value = grid[int(lookahead.real)][int(lookahead.imag)]
@@ -18,15 +18,11 @@ def check_directions(
             continue
         elif lookahead_value == value + 1:
             if lookahead_value == 9:
-                peaks.add(lookahead)
-                routes_count += 1
+                peaks[lookahead] += 1
             else:
-                next_peaks, next_routes_count = check_directions(
-                    grid, lookahead, lookahead_value
-                )
-                peaks.update(next_peaks)
-                routes_count += next_routes_count
-    return peaks, routes_count
+                for k, v in check_directions(grid, lookahead, lookahead_value).items():
+                    peaks[k] += v
+    return peaks
 
 
 def main():
@@ -53,9 +49,9 @@ def main():
     total_2 = 0
 
     for trailhead in trailheads:
-        unique_peaks, routes = check_directions(grid_tuple, trailhead)
-        total_1 += len(unique_peaks)
-        total_2 += routes
+        peaks = check_directions(grid_tuple, trailhead)
+        total_1 += len(peaks)
+        total_2 += sum(peaks.values())
 
     print("Part 1:", total_1)
     print("Part 2:", total_2)
