@@ -1,4 +1,4 @@
-from a import process_instructions
+from common import process_instructions
 
 
 class TestProcessInstructions:
