@@ -17,7 +17,7 @@ def parse() -> tuple[int, int, int, list[int]]:
 
 def process_instructions(
     a: int, b: int, c: int, instructions: list[int]
-) -> tuple[int, int, int, str]:
+) -> tuple[int, int, int, list[int]]:
     i = 0
 
     output = []
@@ -50,7 +50,7 @@ def process_instructions(
         elif instruction == 4:
             b ^= c
         elif instruction == 5:
-            output.append(str(combo % 8))
+            output.append(combo % 8)
         elif instruction == 6:
             b = a // 2**combo
         elif instruction == 7:
@@ -60,4 +60,4 @@ def process_instructions(
             i += 2
         else:
             i = goto
-    return a, b, c, ",".join(output)
+    return a, b, c, output
