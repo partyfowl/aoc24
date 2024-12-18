@@ -17,22 +17,22 @@ def print_grid(grid_size, blocked):
 
 def solve_maze(
     blocked: list[complex], end: complex, position: complex, path: set[complex]
-) -> list[complex]:
+) -> bool:
 
     if position == end:
-        return [path]
+        return True
 
     if position in blocked or position in path:
-        return []
+        return False
 
     path.add(position)
 
     viable_paths = []
     for direction in (1j, 1, -1j, -1):
-        if viable_path := solve_maze(blocked, end, position + direction, path.copy()):
-            viable_paths.extend(viable_path)
+        if solve_maze(blocked, end, position + direction, path):
+            return True
 
-    return viable_paths
+    return False
 
 
 def main():
