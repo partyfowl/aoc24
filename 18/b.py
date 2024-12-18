@@ -16,7 +16,7 @@ def print_grid(grid_size, blocked):
 
 
 def solve_maze(
-    blocked: set[complex], end: complex, position: complex, path: set[complex]
+    blocked: list[complex], end: complex, position: complex, path: set[complex]
 ) -> list[complex]:
 
     if position == end:
@@ -41,39 +41,34 @@ def main():
     grid_size = 71
     filename = "input.txt"
 
+    # Keep blocked as a set of coordinates - this is faster than using the order list directly
+    blocked: set[complex] = set()
+
+    # Keep a list of the coordinates in order, we will pop these later
+    order: list[complex] = []
+
     with open(filename) as f:
-        coords = regex.findall(f.read())
+        for match in regex.findall(f.read()):
+            this = complex(int(match[0]), int(match[1]))
+            blocked.add(this)
+            order.append(this)
 
-    for bytes_fallen in range(len(coords), -1, -1):
-        falling_bytes = (complex(int(coord[0]), int(coord[1])) for coord in coords)
+    # Add a border - not necessary, but makes out of bounds checking easy
+    for i in range(grid_size):
+        blocked.add(complex(-1, i))
+        blocked.add(complex(i, -1))
+        blocked.add(complex(grid_size, i))
+        blocked.add(complex(i, grid_size))
 
-        blocked = {next(falling_bytes) for _ in range(bytes_fallen)}
+    start = complex(0, 0)
+    end = complex(grid_size - 1, grid_size - 1)
 
-        # Add a border
-        for i in range(grid_size):
-            blocked.add(complex(-1, i))
-            blocked.add(complex(i, -1))
-            blocked.add(complex(grid_size, i))
-            blocked.add(complex(i, grid_size))
+    # We work backwards, starting with all bytes blocked, removing them 1 by 1 until a path is available
+    while not solve_maze(blocked, end, start, set()):
+        answer = order.pop()
+        blocked.discard(answer)
 
-        start = complex(0, 0)
-        end = complex(grid_size - 1, grid_size - 1)
-
-        paths = solve_maze(blocked, end, start, set())
-
-        if paths == []:
-            continue
-
-        for coord in falling_bytes:
-            valid_paths = []
-            for path in paths:
-                if coord not in path:
-                    valid_paths.append(path)
-            paths = valid_paths
-            if paths == []:
-                break
-        break
-    print(f"{int(coord.real)},{int(coord.imag)}")
+    print(f"{int(answer.real)},{int(answer.imag)}")
 
 
 if __name__ == "__main__":
