@@ -18,11 +18,9 @@ def is_combination_viable(combo: str, towels: tuple[str, ...]):
 
 def main():
     with open("input.txt") as f:
-        towels = f.readline().strip().split(", ")
+        towels = tuple(f.readline().strip().split(", "))
         f.readline()  # blank line
         combos = f.read().splitlines()
-
-    towels = tuple(sorted(towels, key=len))
 
     part_1 = 0
     part_2 = 0
