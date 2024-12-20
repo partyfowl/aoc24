@@ -19,38 +19,38 @@ def run_race(
     path_taken: dict[complex, int] = {start: index}
     position = start
 
+    directions = (-1, 1j, 1, -1j)
+
     while position != end:
-        for direction in (-1, 1j, 1, -1j):
+        for direction in directions:
             next_position = position + direction
             if next_position in path_taken:
                 continue
-            if grid[int(next_position.real)][int(next_position.imag)] != "#":
-                break
-
-        while grid[int(next_position.real)][int(next_position.imag)] != "#":
-            index += 1
-            position = next_position
-            path_taken[position] = index
-            next_position += direction
+            while grid[int(next_position.real)][int(next_position.imag)] != "#":
+                index += 1
+                position = next_position
+                path_taken[position] = index
+                next_position += direction
 
     return path_taken
 
 
-def solve(max_cheat_duration: int, path: dict[complex, int]):
-    possible_cheats = {
-        sum(_)
-        for _ in combinations_with_replacement(
-            (1, -1, 0, 1j, -1j), r=max_cheat_duration
-        )
-    }
+def solve(
+    max_cheat_duration: int, path: dict[complex, int], path_forwards: set[complex]
+):
+    possible_cheats = tuple(
+        {
+            sum(_)
+            for _ in combinations_with_replacement(
+                (1, -1, 0, 1j, -1j), r=max_cheat_duration
+            )
+        }
+    )
 
     total = 0
 
-    # Sets are faster than lists for lookups
-    path_forwards = set(path)
-
-    for i, location in enumerate(path):
-        path_forwards.remove(location)
+    for location, i in path.items():
+        path_forwards.discard(location)
 
         for cheat in possible_cheats:
             cheat_location = location + cheat
@@ -89,10 +89,13 @@ def main():
 
     path = run_race(grid, start, end)  # 85 - off by one but this is fine
 
-    print("Part 1:", solve(2, path))
-    print("Part 2:", solve(20, path))
+    # Sets are faster than lists for lookups
+    path_forwards = set(path)
+
+    print("Part 1:", solve(2, path, path_forwards.copy()))
+    print("Part 2:", solve(20, path, path_forwards))
 
 
 if __name__ == "__main__":
     print(timeit(main, number=1))
-    # 1.1562933510067523 seconds
+    # 1.1088037389999954 seconds
