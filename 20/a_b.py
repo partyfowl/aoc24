@@ -32,7 +32,7 @@ def run_race(
     return path_taken
 
 
-def main():
+def main(part: int):
     with open("input.txt") as f:
         grid = [_.strip() for _ in f.readlines()]
 
@@ -45,7 +45,11 @@ def main():
 
     vanilla_path = run_race(grid, start, end)  # 85 - off by one but this is fine
 
-    cheat_duration = 20
+    if part == 1:
+        cheat_duration = 2
+    elif part == 2:
+        cheat_duration = 20
+
     possible_cheats = {
         sum(_)
         for _ in combinations_with_replacement((1, -1, 0, 1j, -1j), r=cheat_duration)
@@ -70,9 +74,11 @@ def main():
                 if time_saved >= 100:
                     total += 1
 
-    print(total)
+    print(f"Part {part}: {total}")
 
 
 if __name__ == "__main__":
-    print(timeit(main, number=1))
-    # 1.619272224001179 seconds
+    print(timeit(lambda: main(1), number=1))
+    # 0.5023840590001782 seconds
+    print(timeit(lambda: main(2), number=1))
+    # 1.6199745970006916 seconds
