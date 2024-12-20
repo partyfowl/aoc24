@@ -57,7 +57,10 @@ def main(part: int):
 
     total = 0
 
+    # Sets are faster than lists for lookups
     path_forwards = set(vanilla_path)
+
+    # Create this dict once to avoid calling vanilla_path.index many times
     location_index = {k: v for v, k in enumerate(vanilla_path)}
 
     for i, location in enumerate(vanilla_path):
