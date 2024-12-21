@@ -35,21 +35,21 @@ DIRECTIONS = {"^": -1, ">": 1j, "v": 1, "<": -1j}
 def find_paths(position: complex, destination: complex, avoid: complex):
     movement = destination - position
 
-    movements = []
+    movements = ""
 
     for _ in range(abs(int(movement.real))):
         if movement.real > 0:
-            movements.append("v")
+            movements += "v"
         else:
-            movements.append("^")
+            movements += "^"
 
     for _ in range(abs(int(movement.imag))):
         if movement.imag > 0:
-            movements.append(">")
+            movements += ">"
         else:
-            movements.append("<")
+            movements += "<"
 
-    paths = set("".join(_) for _ in permutations(movements, len(movements)))
+    paths = (movements, movements[::-1])
 
     start_position = position
     viable_paths = set()
@@ -66,7 +66,11 @@ def find_paths(position: complex, destination: complex, avoid: complex):
     return viable_paths
 
 
-def robot_recurse(code: str, keypad: dict[str, complex], remaining_robots: int) -> int:
+def robot_recurse(code: str, robot_keypad: bool, remaining_robots: int) -> int:
+    if robot_keypad:
+        keypad = ROBOT_KEYPAD
+    else:
+        keypad = DOOR_KEYPAD
     if remaining_robots == 0:
         return len(code)
 
@@ -79,7 +83,7 @@ def robot_recurse(code: str, keypad: dict[str, complex], remaining_robots: int) 
         position = keypad[digit]
 
     return min(
-        robot_recurse("".join(options), ROBOT_KEYPAD, remaining_robots - 1)
+        robot_recurse("".join(options), True, remaining_robots - 1)
         for options in (tuple(product(*paths)))
     )
 
@@ -90,7 +94,7 @@ def main():
 
     total = 0
     for code in codes:
-        total += robot_recurse(code, DOOR_KEYPAD, 3) * int(code.strip("A"))
+        total += robot_recurse(code, False, 3) * int(code.strip("A"))
 
     print(total)
 
