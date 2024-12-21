@@ -1,9 +1,7 @@
-from functools import cache
 from itertools import combinations_with_replacement
 from timeit import timeit
 
 
-@cache
 def get_cheat_distance_travelled(cheat: complex) -> int:
     return int(abs(cheat.real) + abs(cheat.imag))
 
@@ -38,27 +36,26 @@ def run_race(
 def solve(
     max_cheat_duration: int, path: dict[complex, int], path_forwards: set[complex]
 ):
-    possible_cheats = tuple(
-        {
+    possible_cheats = {
+        _: get_cheat_distance_travelled(_)
+        for _ in {
             sum(_)
             for _ in combinations_with_replacement(
                 (1, -1, 0, 1j, -1j), r=max_cheat_duration
             )
         }
-    )
+    }
 
     total = 0
 
     for location, i in path.items():
         path_forwards.discard(location)
 
-        for cheat in possible_cheats:
+        for cheat, cheat_distance_travelled in possible_cheats.items():
             cheat_location = location + cheat
             if cheat_location in path_forwards:
 
-                time_saved = (path[cheat_location] - i) - get_cheat_distance_travelled(
-                    cheat
-                )
+                time_saved = (path[cheat_location] - i) - cheat_distance_travelled
 
                 if time_saved >= 100:
                     total += 1
@@ -98,4 +95,4 @@ def main():
 
 if __name__ == "__main__":
     print(timeit(main, number=1))
-    # 1.1088037389999954 seconds
+    # 0.9751461670002755 seconds
