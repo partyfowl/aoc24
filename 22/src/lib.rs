@@ -15,7 +15,7 @@ fn evolve(mut secret: i64) -> i64 {
     return secret;
 }
 
-fn main() {
+pub fn solve() {
     let file = File::open("input.txt").expect("not found");
     let reader = BufReader::new(file);
 
