@@ -2,3 +2,5 @@ input.txt
 test.txt
 .venv
 *.pyc
+target
+Cargo.lock
