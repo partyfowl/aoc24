@@ -24,11 +24,11 @@ def main():
 
     part_1_total = 0
 
-    combo_cache = defaultdict(dict)
+    combo_scores = defaultdict(int)
 
     for secret in secrets:
-        key = secret
         price = secret % 10
+        seen = set()
 
         # Only track the last 4 price changes
         changes = deque(maxlen=combo_length)
@@ -42,16 +42,11 @@ def main():
             if i >= combo_length:
                 # This list (deque) is maximum length 4
                 combo = tuple(changes)
-                if combo not in combo_cache[key]:
-                    combo_cache[key][combo] = price
+                if combo not in seen:
+                    seen.add(combo)
+                    combo_scores[combo] += price
 
         part_1_total += secret
-
-    combo_scores = defaultdict(int)
-
-    for cache in combo_cache.values():
-        for combo, price in cache.items():
-            combo_scores[combo] += price
 
     print("Part 1:", part_1_total)
     print("Part 2:", max(combo_scores.values()))
