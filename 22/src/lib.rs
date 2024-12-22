@@ -60,7 +60,7 @@ pub fn solve() {
             }
         }
 
-        part_1_total = part_1_total + secret
+        part_1_total += secret
     }
 
     let mut part_2_total: i64 = 0;
