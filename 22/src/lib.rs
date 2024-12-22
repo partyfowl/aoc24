@@ -54,7 +54,7 @@ pub fn solve() {
                     combos.insert(combo);
                     combo_scores
                         .entry(combo)
-                        .and_modify(|k| *k += price)
+                        .and_modify(|v| *v += price)
                         .or_insert(price);
                 }
             }
