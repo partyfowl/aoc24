@@ -1,19 +1,36 @@
+use regex::Regex;
 use std::fs;
 
-fn _parse() {
-    // TODO
+fn parse() -> (i64, i64, i64, Vec<i64>) {
     let content = fs::read_to_string("input.txt").expect("not found");
-    println!("{content}");
+
+    let re = Regex::new(
+        r"Register A: (\d+)\nRegister B: (\d+)\nRegister C: (\d+)\n+Program: (\d(?:,\d+)*)",
+    )
+    .unwrap();
+    let Some(caps) = re.captures(&content) else {
+        return (0, 0, 0, vec![]);
+    };
+    let a = caps[1].parse().unwrap();
+    let b = caps[2].parse().unwrap();
+    let c = caps[3].parse().unwrap();
+
+    let instructions = caps[4]
+        .split(",")
+        .map(|s| s.parse::<i64>().unwrap())
+        .collect();
+
+    return (a, b, c, instructions);
 }
 
 fn process_instructions(
-    mut a: i128,
-    mut b: i128,
-    mut c: i128,
-    instructions: Vec<i128>,
-) -> (i128, i128, i128, Vec<i128>) {
+    mut a: i64,
+    mut b: i64,
+    mut c: i64,
+    instructions: Vec<i64>,
+) -> (i64, i64, i64, Vec<i64>) {
     let mut i: usize = 0;
-    let mut output: Vec<i128> = Vec::new();
+    let mut output: Vec<i64> = Vec::new();
 
     while i < instructions.len() {
         let instruction = instructions[i];
@@ -25,10 +42,10 @@ fn process_instructions(
             6 => combo = c,
             _ => combo = literal,
         }
-        let mut goto: Option<i128> = None;
+        let mut goto: Option<i64> = None;
 
         match instruction {
-            0 => a = a / 2_i128.pow(combo.try_into().unwrap()),
+            0 => a = a / 2_i64.pow(combo.try_into().unwrap()),
             1 => b ^= literal,
             2 => b = combo % 8,
             3 => {
@@ -38,8 +55,8 @@ fn process_instructions(
             }
             4 => b ^= c,
             5 => output.push(combo % 8),
-            6 => b = a / 2_i128.pow(combo.try_into().unwrap()),
-            7 => c = a / 2_i128.pow(combo.try_into().unwrap()),
+            6 => b = a / 2_i64.pow(combo.try_into().unwrap()),
+            7 => c = a / 2_i64.pow(combo.try_into().unwrap()),
             _ => println!(""),
         }
         if let Some(value) = goto {
@@ -53,10 +70,19 @@ fn process_instructions(
 }
 
 fn main() {
-    let mut a = 1;
-    let b = 0;
-    let c = 0;
-    let instructions = vec![]; // TODO parse
+    let (mut a, b, c, instructions) = parse();
+
+
+    // Part 1
+    let (_, _, _, output) = process_instructions(a, b, c, instructions.clone());
+
+    let string_vector: Vec<String> = output.iter().map(|v| v.to_string()).collect();
+    let part_1_answer = string_vector.join(",");
+
+    println!("Part 1: {part_1_answer}");
+
+    // Part 2
+    a = 1;
 
     let (_, _, _, mut output) = process_instructions(a, b, c, instructions.clone());
 
@@ -66,7 +92,7 @@ fn main() {
         } else {
             for index in (0..instructions.len()).rev() {
                 if instructions[index] != output[index] {
-                    a += 8_i128.pow(index.try_into().unwrap());
+                    a += 8_i64.pow(index.try_into().unwrap());
                     break;
                 }
             }
