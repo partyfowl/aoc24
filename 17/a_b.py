@@ -1,11 +1,12 @@
-from math import ceil
-
 from common import parse, process_instructions
 
 
-
 def main():
-    _, b, c, instructions = parse()
+    a, b, c, instructions = parse()
+
+    result = ",".join(str(_) for _ in process_instructions(a, b, c, instructions)[-1])
+
+    print("Part 1:", result)
 
     a = 1
 
@@ -21,7 +22,8 @@ def main():
                     # Use the fact that the digits correlate to base 8 to our advantage here
                     a += 8 ** i
                     break
-    print(a)
+
+    print("Part 2:", a)
 
 
 if __name__ == "__main__":
