@@ -25,7 +25,6 @@ def main():
     part_1_total = 0
 
     combo_cache = defaultdict(dict)
-    possible_combos = set()
 
     for secret in secrets:
         key = secret
@@ -45,7 +44,6 @@ def main():
                 combo = tuple(changes)
                 if combo not in combo_cache[key]:
                     combo_cache[key][combo] = price
-                    possible_combos.add(combo)
 
         part_1_total += secret
 
@@ -61,4 +59,4 @@ def main():
 
 if __name__ == "__main__":
     print(timeit(main, number=1))
-    # 7.159553475999928
+    # 5.714555202000156
