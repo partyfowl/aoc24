@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 from timeit import timeit
 
 
@@ -22,43 +22,38 @@ def main():
     iterations = 2000
     combo_length = 4
 
-    changes = defaultdict(list)
-    prices = defaultdict(list)
-
     part_1_total = 0
+
+    combo_cache = defaultdict(dict)
+    possible_combos = set()
 
     for secret in secrets:
         key = secret
         price = secret % 10
 
-        for _ in range(iterations):
+        # Only track the last 4 price changes
+        changes = deque(maxlen=combo_length)
+
+        for i in range(1, iterations + 1):
             secret = evolve(secret)
-            change = secret % 10 - price
-            price = secret % 10
-            changes[key].append(change)
-            prices[key].append(price)
+            new_price = secret % 10
+            change = new_price - price
+            price = new_price
+            changes.append(change)
+            if i >= combo_length:
+                # This list (deque) is maximum length 4
+                combo = tuple(changes)
+                if combo not in combo_cache[key]:
+                    combo_cache[key][combo] = price
+                    possible_combos.add(combo)
 
         part_1_total += secret
 
-    possible_combos: set[tuple[int, int, int, int]] = set()
-
-    for secret, secret_changes in changes.items():
-        for n in range(1, 10):
-            possible_combos.update(
-                tuple(secret_changes[i - combo_length + 1 : i + 1])
-                for i, x in enumerate(secret_changes)
-                if x == n and i >= 3
-            )
-
     combo_scores = defaultdict(int)
 
-    for secret, secret_changes in changes.items():
-        this_combos = possible_combos.copy()
-        for i in range(combo_length, iterations):
-            combo = tuple(secret_changes[i + 1 - combo_length : i + 1])
-            if combo in this_combos:
-                combo_scores[combo] += prices[secret][i]
-                this_combos.remove(combo)
+    for cache in combo_cache.values():
+        for combo, price in cache.items():
+            combo_scores[combo] += price
 
     print("Part 1:", part_1_total)
     print("Part 2:", max(combo_scores.values()))
@@ -66,4 +61,4 @@ def main():
 
 if __name__ == "__main__":
     print(timeit(main, number=1))
-    # 8.890626477000296
+    # 7.159553475999928
